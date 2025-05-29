@@ -3,7 +3,7 @@ import "./App.css";
 import { makeData } from "./utils/make-data";
 import { DataTable } from "./components/ui/DataTable";
 import { Button } from "./components/ui/button";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { Github, ThumbsDown, ThumbsUp } from "lucide-react";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
@@ -83,6 +83,16 @@ function App() {
         <h1 className="mb-10 max-w-[500px] mx-auto text-center text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white">
           Data Export Demo with Web Worker vs Main Thread
         </h1>
+        <div className="flex justify-center mb-3">
+          <Button asChild>
+            <a
+              href="https://github.com/hafizhuseynov/web-worker"
+              target="_blank"
+            >
+              <Github /> Repository
+            </a>
+          </Button>
+        </div>
         <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
           This simple page demonstrates the difference between exporting large
           datasets using a Web Worker versus doing it on the main thread.
@@ -129,26 +139,22 @@ function App() {
           <Button
             disabled={workerLoading}
             onClick={async () => {
-              const exportedData = await exportData({
-                data,
-                columns,
-                onError: (error) => {
-                  console.error(error);
-                },
-              });
+              exportData({ data, columns, onError: console.error }).then(
+                async (exportedData) => {
+                  if (exportedData.length === 1) {
+                    const pdf = exportedData[0];
+                    saveAs(pdf, `Document.pdf`);
+                  } else {
+                    const zip = new JSZip();
+                    exportedData.forEach((arrayBuffer, index) => {
+                      zip.file(`chunk_${index + 1}.pdf`, arrayBuffer);
+                    });
 
-              if (exportedData.length === 1) {
-                const pdf = exportedData[0];
-                saveAs(pdf, `Document.pdf`);
-              } else {
-                const zip = new JSZip();
-                exportedData.forEach((arrayBuffer, index) => {
-                  zip.file(`chunk_${index + 1}.pdf`, arrayBuffer);
-                });
-
-                const zipBlob = await zip.generateAsync({ type: "blob" });
-                saveAs(zipBlob, `Document.zip`);
-              }
+                    const zipBlob = await zip.generateAsync({ type: "blob" });
+                    saveAs(zipBlob, `Document.zip`);
+                  }
+                }
+              );
             }}
           >
             <ThumbsDown /> Export Single Thread
