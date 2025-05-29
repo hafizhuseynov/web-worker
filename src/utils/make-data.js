@@ -16,7 +16,7 @@ const newPerson = (index) => {
     age: faker.number.int(40),
     visits: faker.number.int(1000),
     progress: faker.number.int(100),
-    createdAt: faker.date.anytime(),
+    createdAt: faker.date.anytime().toISOString(),
     status: faker.helpers.shuffle(["relationship", "complicated", "single"])[0],
   };
 };
