@@ -50,9 +50,9 @@ const columns = [
 const fileName = "Document";
 
 function App() {
-  const [dataCount, setDataCount] = React.useState(100);
+  const [dataCount, setDataCount] = React.useState(10000);
 
-  const [data, setData] = React.useState(() => makeData(100));
+  const [data, setData] = React.useState(() => makeData(10000));
   const [workerLoading, setWorkerLoading] = React.useState(false);
 
   function notifyWorkerStarted(message) {
